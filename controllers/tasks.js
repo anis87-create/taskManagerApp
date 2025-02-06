@@ -1,6 +1,15 @@
 const Task = require('../models/Task');
 const {validationResult} = require('express-validator');
 exports.createTask = async (req, res) => {
+    const arr = validationResult(req).array();
+    const errors =  arr.map(error => ({
+       msg: error.msg,
+       params: error.path
+    }));
+    
+    if(errors.length>0){
+        return res.status(400).json({errors})
+    }
     try {
         delete req.body._id;
         const task = new Task({
