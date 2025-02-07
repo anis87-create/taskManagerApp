@@ -1,10 +1,20 @@
 const User = require('../models/User');
+const {validationResult} = require('express-validator');
 exports.register = async (req, res) => {
     try {
         delete req.body._id;
-        console.log(req.body);
-        
-        const user = new User({...req.body});
+        const arr = validationResult(req).array();
+        const errors =  arr.map(error => ({
+            msg: error.msg,
+            params: error.path
+        }));
+        if(errors.length>0){
+            return res.status(400).json({errors})
+        }
+        const user = new User({
+            ...req.body,
+            avatar: req.file ? `/uploads/${req.file.filename}` : ""
+        });
         await user.save();
         res.status(200).json({msg:'Account created!'});
     } catch (error) {
@@ -14,7 +24,18 @@ exports.register = async (req, res) => {
 
 exports.update = async (req, res) => {
     try {
-        await User.updateOne({_id: req.params.id}, {...req.body, _id: req.params.id});
+        const arr = validationResult(req).array();
+        const errors =  arr.map(error => ({
+            msg: error.msg,
+            params: error.path
+        }));
+        if(errors.length>0){
+            return res.status(400).json({errors})
+        }
+        await User.updateOne({_id: req.params.id}, {
+            ...req.body,
+            avatar: req.file ? `/uploads/${req.file.filename}` : "",
+            _id: req.params.id});
         res.json({msg:'User Updated!'});
     } catch (error) {
         res.status(400).json({error});
