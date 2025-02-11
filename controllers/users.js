@@ -22,8 +22,7 @@ exports.register = async (req, res) => {
         });
         await user.save();
         res.status(201).json({
-            ...req.body,
-            token: generateToken(user.id)
+           msg:'Account created!'
         });
     } catch (error) {
         res.status(400).json({error});
@@ -73,9 +72,7 @@ exports.authMe = async (req, res) => {
     try {
         const user = await User.findOne({_id: req.params.id});
 
-        const {username, email} = user;
-        console.log(user);
-        
+        const {username, email} = user;        
         const token = generateToken(user.id);
         res.status(200).json({
           username,
@@ -107,8 +104,9 @@ exports.findAll = async (req, res) => {
 }
 
 const generateToken = (id) => {
-   return jwt.sign({id}, process.env.JWT_SECRET_KEY, {
+   const token = jwt.sign({id}, process.env.JWT_SECRET_KEY, {
     expiresIn:'30d'
-   })
+   });
+   return `Bearer ${token}`;
 };
 

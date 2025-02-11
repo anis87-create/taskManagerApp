@@ -2,10 +2,11 @@ const express = require('express');
 const router = express.Router();
 const taskCtrl = require('../controllers/tasks');
 const errorsTasksValidation = require('../middlewares/errorTasksValidators');
-router.post('/', errorsTasksValidation, taskCtrl.createTask);
-router.get('/',taskCtrl.getAllTasks);
-router.get('/:id', taskCtrl.getTask);
-router.put('/:id', taskCtrl.updateTask);
-router.delete('/:id', taskCtrl.deleteTask);
+const isAuth = require('../middlewares/isAuth');
+router.post('/',isAuth, errorsTasksValidation, taskCtrl.createTask);
+router.get('/',isAuth, taskCtrl.getAllTasks);
+router.get('/:id',isAuth, taskCtrl.getTask);
+router.put('/:id',isAuth, errorsTasksValidation, taskCtrl.updateTask);
+router.delete('/:id',isAuth, taskCtrl.deleteTask);
 
 module.exports = router;
