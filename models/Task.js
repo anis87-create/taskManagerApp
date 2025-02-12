@@ -1,4 +1,4 @@
-const {Schema, default: mongoose} = require('mongoose');
+const {Schema, default: mongoose, Mongoose} = require('mongoose');
 
 const TaskSchema = Schema({
     title: {type: String, required: true},
@@ -16,7 +16,8 @@ const TaskSchema = Schema({
     dueDate: {type: Date},
     tags: [
        {type: String}
-    ]
+    ],
+    owner: {type: mongoose.Schema.Types.ObjectId, ref:'User'}
 }, {
     timestamps: true
 });

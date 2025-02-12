@@ -34,7 +34,7 @@ exports.login = async (req, res) => {
         const {email, password} = req.body;
         const user = await User.findOne({email});
         const match = await bcrypt.compare(password, user.password);
-        const token = await generateToken(user.id);
+        const token = await generateToken(user.id, user.role);
         if(match){
             res.status(200).json({
                 ...req.body,
@@ -103,8 +103,8 @@ exports.findAll = async (req, res) => {
     }
 }
 
-const generateToken = (id) => {
-   const token = jwt.sign({id}, process.env.JWT_SECRET_KEY, {
+const generateToken = (id, role) => {
+   const token = jwt.sign({id, role}, process.env.JWT_SECRET_KEY, {
     expiresIn:'30d'
    });
    return `Bearer ${token}`;
