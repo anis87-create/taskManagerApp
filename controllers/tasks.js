@@ -1,5 +1,7 @@
 const Task = require('../models/Task');
+const Notification = require('../models/Notification');
 const {validationResult} = require('express-validator');
+
 exports.createTask = async (req, res) => {
     const arr = validationResult(req).array();
     const errors =  arr.map(error => ({
@@ -16,7 +18,16 @@ exports.createTask = async (req, res) => {
             ...req.body
         });
         await task.save();
-        res.status(201).json({msg:'Task added!!'})
+        const notification = new Notification({
+            userId: req.body.owner,
+            taskId: task.id,
+            type:'task_assigned',
+            message:'a new task  has been created!'
+        });
+        await notification.save();
+        
+ 
+        res.status(201).json({msg:'Task added and notification created!!'})
     } catch (error) {
         res.status(400).json({error});
     }
@@ -52,7 +63,7 @@ exports.updateTask = async (req, res) => {
 exports.deleteTask = async (req, res) => {
     try {
         await Task.deleteOne({_id: req.params.id});
-        res.status(200).json({msg:'Task deleted'});
+        res.status(200).json({msg:'Task deleted!!!'});
     } catch (error) {
         res.status(400).json({error});
     }

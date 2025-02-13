@@ -10,7 +10,12 @@ const UserSchema = Schema({
         enum: ["admin", "user"],
         default:"user"
     },
-    avatar: {type: String}
+    avatar: {type: String},
+    mode: {
+        type: String,
+        enum: ["Task","Project"],
+        default:'Task'
+    }
 }, {
     timestamps: true
 });

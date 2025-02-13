@@ -9,7 +9,7 @@ const checkTaskOwnerShip = async (req, res, next) => {
        return next();
     }
 
-    return res.status(403).json({ message: "denies access!" });
+    return res.status(403).json({ message: "denied access!" });
 }
 
 module.exports = checkTaskOwnerShip;
