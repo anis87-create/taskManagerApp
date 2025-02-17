@@ -3,8 +3,11 @@ const {validationResult} = require('express-validator');
 exports.createProject = async (req, res) => {
     try {
         delete req.body._id;
-        
-        const project = new Project({
+        let project= Project.findOne({name: req.body.name});
+        if(!project){
+            return res.status(400).json({msg:'project already exist'})
+        }
+        project = new Project({
             ...req.body,
             avatar: req.file ? `/uploads/${req.file.filename}` : ""
         });

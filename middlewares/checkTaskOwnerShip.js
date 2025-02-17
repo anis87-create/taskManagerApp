@@ -5,7 +5,7 @@ const checkTaskOwnerShip = async (req, res, next) => {
 
 
     
-    if(task?.owner.toString()=== req.user.id || req.user.role === 'admin'){
+    if(task?.owner?.toString()=== req.user.id || req.user.role === 'admin'){
        return next();
     }
 

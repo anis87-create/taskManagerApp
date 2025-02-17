@@ -10,12 +10,16 @@ exports.register = async (req, res) => {
             msg: error.msg,
             params: error.path
         }));
+        let user =await User.findOne({email: req.body.email});
+        if(user){
+            return res.status(400).json({msg:'user already exist'});
+        }
         if(errors.length>0){
             return res.status(400).json({errors})
         }
         const saltRound = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(req.body.password, saltRound);
-        const user = new User({
+        user = new User({
             ...req.body,
             avatar: req.file ? `/uploads/${req.file.filename}` : "",
             password: hashedPassword

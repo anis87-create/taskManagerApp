@@ -14,9 +14,14 @@ exports.createTask = async (req, res) => {
     }
     try {
         delete req.body._id;
-        const task = new Task({
+        let task = await Task.findOne({title: req.body.title});
+        if(task){
+            return res.status(400).json({msg:'task already exist'});
+        }
+         task = new Task({
             ...req.body
         });
+
         await task.save();
         const notification = new Notification({
             userId: req.body.owner,
