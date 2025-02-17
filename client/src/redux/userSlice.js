@@ -1,9 +1,9 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from 'axios';
-const API_REGISTER = `http://localhost:3000/api/users/`;
-const API_LOGIN = `http://localhost:3000/api/users/login`;
-const API_FETCH_USERS = `http://localhost:3000/api/users/login`;
-const API_CURRENT_USER= `http://localhost:3000/api/users/me`;
+const API_REGISTER = `http://localhost:5000/api/users/`;
+const API_LOGIN = `http://localhost:5000/api/users/login`;
+const API_FETCH_USERS = `http://localhost:5000/api/users/login`;
+const API_CURRENT_USER= `http://localhost:5000/api/users/me`;
 export const register = createAsyncThunk('user/register', async (userData, {rejectWithValue}) => {
     try {
        const res = await axios.post(API_REGISTER, userData);
@@ -12,9 +12,9 @@ export const register = createAsyncThunk('user/register', async (userData, {reje
         return rejectWithValue(error.response?.data || 'Erreur API');
     }
 });
-export const login = createAsyncThunk('user/login', async (_, {rejectWithValue}) => {
+export const login = createAsyncThunk('user/login', async (userData, {rejectWithValue}) => {
   try {
-      const res = await axios.post(API_LOGIN);
+      const res = await axios.post(API_LOGIN, userData);
       return res.data;
   } catch (error) {
     return rejectWithValue(error.response?.data || 'Erreur API');

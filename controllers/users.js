@@ -72,16 +72,14 @@ exports.update = async (req, res) => {
     }
 }
 
-exports.authMe = async (req, res) => {
+exports.currentUser = async (req, res) => {
     try {
-        const user = await User.findOne({_id: req.params.id});
-
-        const {username, email} = user;        
-        const token = generateToken(user.id);
+        const user = await User.findById(req.user.id).select('-password');
         res.status(200).json({
-          username,
-          email, 
-          token
+            _id: user.id,
+            username: user.username,
+            email: user.email,
+            token: generateToken(user.id, user.role)
         });
     } catch (error) {
         res.status(400).json({error});
