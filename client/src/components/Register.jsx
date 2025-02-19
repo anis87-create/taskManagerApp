@@ -1,22 +1,46 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Authentication from './Authentication'
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
+import {useDispatch} from 'react-redux';
+import { register } from '../redux/userSlice';
 
 const Register = () => {
+  const disptach = useDispatch();
+  const [form, setForm] = useState({
+      username:'',
+      email:'',
+      password:''
+  });
+  const navigate = useNavigate();
+  const handleChange =(e) =>{
+     setForm({...form,
+      [e.target.name]: e.target.value
+     });
+  }    
+  const signup = (e) => {
+      e.preventDefault();
+      disptach(register(form));
+      setForm({
+            username:'',
+            email:'',
+            password:''
+      })
+      navigate('/login');
+  }
   return (
     <Authentication>
-    <form>
+    <form onSubmit={signup}>
        <div className="text-left"> 
              <label id='email'>E-mail</label> <br />
-             <input type='text' htmlFor="email"  className='border-gray-300 border-2 w-100 p-3 mt-2 focus:border-orange-500 focus:outline-none p-2'/>
+             <input type='text' name='email' htmlFor="email" onChange={handleChange} value={form.email}  className='border-gray-300 border-2 w-100 p-3 mt-2 focus:border-orange-500 focus:outline-none p-2'/>
        </div>
        <div className="text-left mt-4"> 
              <label id='username'>Nom d'utilisateur</label> <br />
-             <input type='text' htmlFor="username"  className='border-gray-300 border-2 w-100 p-3 mt-2 focus:border-orange-500 focus:outline-none p-2'/>
+             <input type='text' htmlFor="username" name='username' onChange={handleChange} value={form.username}  className='border-gray-300 border-2 w-100 p-3 mt-2 focus:border-orange-500 focus:outline-none p-2'/>
        </div>
        <div className="text-left mt-4"> 
              <label id='password'>Mot de passe</label> <br />
-             <input type='password' htmlFor="password"  className='border-gray-300 border-2 w-100 p-3 mt-2 focus:border-orange-500 focus:outline-none p-2'/>
+             <input type='password' htmlFor="password" name='password' onChange={handleChange} value={form.password}  className='border-gray-300 border-2 w-100 p-3 mt-2 focus:border-orange-500 focus:outline-none p-2'/>
        </div>
        <div className="text-left mt-4"> 
              <label id='avatar'>Image de profil</label> <br />

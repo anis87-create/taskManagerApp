@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from 'axios';
 const API_REGISTER = `http://localhost:5000/api/users/`;
 const API_LOGIN = `http://localhost:5000/api/users/login`;
-const API_FETCH_USERS = `http://localhost:5000/api/users/login`;
+const API_FETCH_USERS = `http://localhost:5000/api/users`;
 const API_CURRENT_USER= `http://localhost:5000/api/users/me`;
 export const register = createAsyncThunk('user/register', async (userData, {rejectWithValue}) => {
     try {
@@ -15,6 +15,7 @@ export const register = createAsyncThunk('user/register', async (userData, {reje
 export const login = createAsyncThunk('user/login', async (userData, {rejectWithValue}) => {
   try {
       const res = await axios.post(API_LOGIN, userData);
+
       return res.data;
   } catch (error) {
     return rejectWithValue(error.response?.data || 'Erreur API');
@@ -24,10 +25,13 @@ export const login = createAsyncThunk('user/login', async (userData, {rejectWith
 export const authMe = createAsyncThunk('user/currentUser', async(_, {rejectWithValue}) => {
   try {
       const token = localStorage.getItem('token');
-      const config = {headers: {Authorization:`Bearer ${token}`}}
-      const res = await axios.get(API_CURRENT_USER, config);
+      const config = {headers: {Authorization:token}}
+      const res = await axios.get(API_CURRENT_USER, config);      
+      
       return res.data;
   } catch (error) {
+    console.log(error.error.response?.data);
+    
     return rejectWithValue(error.response?.data || 'Erreur API');
   }
 });
@@ -53,7 +57,7 @@ const userSlice = createSlice({
         users: []
     },
     reducers:{
-      reducers: (state) => {
+      logout: (state) => {
         state.isConnected= false;
         state.user = null;
       }
@@ -76,13 +80,15 @@ const userSlice = createSlice({
           .addCase(login.pending, (state, {payload}) => {
             state.loading = true;
             state.errors = [];
+            state.user = null;
             state.isConnected = false;
           })
           .addCase(login.fulfilled, (state, {payload}) => {
             state.loading = false;
             state.errors = [];
             state.isConnected = true;
-            localStorage.setItem('token', payload.user.token)
+            state.user = payload;
+            localStorage.setItem('token', payload?.token)
           })
           .addCase(login.rejected, (state, {payload}) => {
             state.loading = false;
@@ -110,6 +116,7 @@ const userSlice = createSlice({
           .addCase(authMe.fulfilled, (state, {payload}) => {
             state.user = payload;
             state.errors = [];
+            state.isConnected=true;
           })
           .addCase(authMe.rejected, (state, {payload}) => {
             state.user =  null;
@@ -117,5 +124,7 @@ const userSlice = createSlice({
           })
     },
 })
+
+export const {logout} = userSlice.actions;
 
 export default userSlice.reducer;
