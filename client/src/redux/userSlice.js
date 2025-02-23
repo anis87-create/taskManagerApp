@@ -75,7 +75,7 @@ const userSlice = createSlice({
           })
           .addCase(register.rejected, (state, {payload}) => {
             state.loading = false;
-            state.errors = payload.errors;
+            state.errors = payload?.errors;
           })
           .addCase(login.pending, (state, {payload}) => {
             state.loading = true;
@@ -92,7 +92,7 @@ const userSlice = createSlice({
           })
           .addCase(login.rejected, (state, {payload}) => {
             state.loading = false;
-            state.errors = payload.errors;
+            state.errors = payload?.errors;
             state.isConnected = false;
           })
           .addCase(fetchAllUsers.pending, (state, {payload}) => {
@@ -106,7 +106,7 @@ const userSlice = createSlice({
           })
           .addCase(fetchAllUsers.rejected, (state, {payload}) => {
             state.loading = false;
-            state.errors = payload.errors;
+            state.errors = payload?.errors;
           })
           .addCase(authMe.pending, (state, {payload}) => {
             state.user = null;
@@ -120,7 +120,7 @@ const userSlice = createSlice({
           })
           .addCase(authMe.rejected, (state, {payload}) => {
             state.user =  null;
-            state.errors = payload.errors;
+            state.errors = payload?.errors;
           })
     },
 })
