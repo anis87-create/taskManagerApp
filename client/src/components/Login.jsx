@@ -1,16 +1,19 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Authentication from './Authentication'
 import { useDispatch, useSelector } from 'react-redux'
 import { login } from '../redux/userSlice'
+
 const Login = () => {
   const user = useSelector(state => state.user);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [form, setForm] = useState({
         email:'',
         password:''
     });
-  const navigate = useNavigate();
+
+
   const handleChange =(e) =>{
        setForm({...form,
         [e.target.name]: e.target.value
@@ -20,15 +23,18 @@ const Login = () => {
   const onSubmit = (e) => {
     e.preventDefault();
      dispatch(login(form));
-     if(user.isConnected=== true){
-       navigate('/');
-     }
+
   }
+  useEffect(() => {
+    if (user?.isConnected) {
+      navigate('/'); // Redirection lorsque l'utilisateur est connecté
+    }
+  }, [user, navigate]); // Lorsque `user` change, on vérifie si l'utilisateur est connecté
 
 
   return (
     <Authentication>
-       <form onSubmit={onSubmit}>
+       <form onSubmit={onSubmit}  method="POST">
           <div className="text-left"> 
                 <label id='email'>E-mail *</label> <br />
                 <input type='text' htmlFor="email" name='email' onChange={handleChange} value={form.email}  className='border-gray-300 border-2 w-100 mb-10  focus:border-orange-500 focus:outline-none p-2' style={{marginBottom:'9px'}}/>

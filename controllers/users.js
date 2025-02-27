@@ -38,12 +38,9 @@ exports.login = async (req, res) => {
         const {email, password} = req.body;
         const user = await User.findOne({email});
         const match = await bcrypt.compare(password, user.password);
-        const token = await generateToken(user.id, user.role);
+        const token =  generateToken(user.id, user.role);
         if(match){
-            res.status(200).json({
-                ...req.body,
-                token,
-                msg: 'login with success!'})
+            await res.status(200).json({user, token})
         }else {
             res.status(400).json({msg: 'bad credentials!'});
         }
@@ -75,13 +72,12 @@ exports.update = async (req, res) => {
 exports.currentUser = async (req, res) => {
     try {
         const user = await User.findById(req.user.id).select('-password');
-        res.status(200).json({
-            _id: user.id,
-            username: user.username,
-            email: user.email,
-            token: generateToken(user.id, user.role)
-        });
+
+         res.status(200).json(user);
+
     } catch (error) {
+        console.log(error);
+        
         res.status(400).json({error});
     }
 }
@@ -109,6 +105,6 @@ const generateToken = (id, role) => {
    const token = jwt.sign({id, role}, process.env.JWT_SECRET_KEY, {
     expiresIn:'30d'
    });
-   return `Bearer ${token}`;
+   return token;
 };
 

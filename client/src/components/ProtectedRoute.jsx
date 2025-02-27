@@ -1,10 +1,10 @@
-import React from "react";
-import { useSelector } from "react-redux";
-import { Navigate } from "react-router-dom";
+import { Navigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const ProtectedRoute = ({ children }) => {
   const {user} = useSelector(state => state.user);
-  return user?.isConnected === true ? children : <Navigate to="/login" />;
+
+  return user ? children : <Navigate to="/login" />;
 };
 
 export default ProtectedRoute;

@@ -1,17 +1,13 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import logo from '../assets/logo.png';
 import Dropdown from './Dropdown';
+import { authMe } from '../redux/userSlice';
 
 const Navbar = () => {
-  const { user } = useSelector(state => state.user);
-  const navigate = useNavigate();  // Assure-toi que useNavigate est bien utilisé ici
-
-  const handleAddTask = () => {
-    navigate('/ajouter-tache');  // Exemple de navigation vers une autre route
-  };
-
+  const { user } = useSelector(state => state.user); 
+  console.log(user?.username);
+  
   return (
     <div className="grid grid-cols-12 border-b-2 border-gray-50 shadow-lg h-20 flex items-center">
       <div className="col-span-1 p-4">

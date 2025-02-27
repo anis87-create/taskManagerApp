@@ -10,6 +10,9 @@ export default function Dropdown() {
   const {user} = useSelector(state => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const img = `http://localhost:5000${user?.avatar}`;
+  console.log(user);
+  
   return (
     <div className="relative inline-block">
       {/* Dropdown Button */}
@@ -18,9 +21,16 @@ export default function Dropdown() {
         onClick={() => setOpen(!open)}
       >
         {/* Circular Button */}
-        <div className="w-10 h-10 bg-gray-700 text-white flex items-center justify-center rounded-full text-sm font-bold">
-          AZ
-        </div>
+
+          <img
+            src={img}
+            alt="Profile"
+            className="rounded-full"
+            width={40}
+            height={40}
+          />
+
+
         {/* Arrow Icon */}
         <div className={`ml-auto pr-2 transition-transform ${open ? "rotate-180" : "rotate-0"}`}>
           <svg className="w-4 h-4 text-gray-800" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -32,8 +42,15 @@ export default function Dropdown() {
       {/* Dropdown Menu */}
       {open && (
         <div className="absolute p-4 right-1  mb-4 w-100 mr-30 bg-white shadow-md rounded-md overflow-hidden border border-gray-300">
-          <div className="p-4 flex border-gray-200 border-b-2 ">
-              {user?.username}
+          <div className="p-2 flex border-gray-200 border-b-2 items-center justify-between w-44">
+            <img
+              src={img}
+              alt="Profile"
+              className="rounded-full"
+              width={40}
+              height={40}
+            />
+              <span className="font-bold">{user?.username}</span>
           </div>  
           <div className="flex items-center p-2">
               <FaRegUser />
@@ -47,6 +64,7 @@ export default function Dropdown() {
             onClick={() => {
                 dispatch(logout());
                 navigate('/login');
+                window.location.reload();
             }}
           >
               <AiOutlineLogout  />
