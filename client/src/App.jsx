@@ -1,37 +1,24 @@
-import './App.css';
-import Login from './components/Login';
-import Register from './components/Register';
-import Home from './components/Home';
-import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { authMe } from './redux/userSlice';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Layout from './components/Layout';
-import ProtectedRoute from './components/ProtectedRoute';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Layout from "./components/Layout";
+import Home from "./components/Home";
+import Tasks from "./components/Tasks";
+import Calendar from "./components/Calendar";
+import Login from "./components/Login";
+import Register from "./components/Register";
+import ProtectedRoute from "./components/ProtectedRoute";
+import Dashboard from "./components/Dashboard";
 
 function App() {
-  const dispatch = useDispatch();
-  const userState = useSelector((state) => state.user) || {};  
-  const { user, token } = userState;
-  useEffect(() => {
-
-    if(token){
-      dispatch(authMe());
-    }
-  }, [dispatch, token]);
-
   return (
     <Router>
       <Routes>
-        {/* Pages avec Navbar */}
-        <Route path="/" element={<Layout />}>
-          <Route index element={
-               <ProtectedRoute>
-                 <Home />
-               </ProtectedRoute>  
-            } />
+        {/* Protected Layout with Sidebar & Navbar */}
+        <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+          <Route index element={<Home />} />
+          <Route path="dashboard" element={<Home />} />
+          <Route path="tasks" element={<Tasks />} />
+          <Route path="calendar" element={<Calendar />} />
         </Route>
-        {/* Pages sans Navbar */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
       </Routes>

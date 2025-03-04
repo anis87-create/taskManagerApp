@@ -59,7 +59,7 @@ exports.update = async (req, res) => {
         if(errors.length>0){
             return res.status(400).json({errors})
         }
-        await User.updateOne({_id: req.params.id}, {
+        await User.updateOne({email: req.params.id}, {
             ...req.body,
             avatar: req.file ? `/uploads/${req.file.filename}` : "",
             _id: req.params.id});

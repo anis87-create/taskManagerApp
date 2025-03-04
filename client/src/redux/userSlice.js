@@ -5,6 +5,8 @@ const API_REGISTER = `http://localhost:5000/api/users/`;
 const API_LOGIN = `http://localhost:5000/api/users/login`;
 const API_FETCH_USERS = `http://localhost:5000/api/users`;
 const API_CURRENT_USER = `http://localhost:5000/api/users/me`;
+const API_UDPATE_USER = `http://localhost:5000/api/users`;
+
 
 // ✅ Inscription (register)
 export const register = createAsyncThunk(
@@ -74,6 +76,18 @@ export const fetchAllUsers = createAsyncThunk(
     }
   }
 );
+export const updateUser = createAsyncThunk('user/updateUser',
+  async({user, id}, {rejectWithValue}) => {
+    try {
+      await axios.put(`${API_UDPATE_USER}/${id}`, user);
+    } catch (error) {
+      console.log(error);
+      
+      return rejectWithValue(error.response?.data?.message || "Erreur API");
+    }
+  }
+
+)
 
 // ✅ Slice Redux
 const userSlice = createSlice({
@@ -154,7 +168,20 @@ const userSlice = createSlice({
         console.log(payload);
         state.loading = false;
         state.user = null;
-      });
+      })
+      .addCase(updateUser.pending, (state) => {
+        state.loading= false;
+        state.errors = null;
+      })
+      .addCase(updateUser.fulfilled, (state) => {
+        state.loading= true;
+        state.errors = null;
+      })
+      .addCase(updateUser.rejected, (state, {payload}) => {
+        state.loading= false;
+        state.errors = payload;
+      })
+      
   },
 });
 

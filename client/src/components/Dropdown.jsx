@@ -1,23 +1,52 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AiOutlineLogout } from "react-icons/ai";
-import { RiNotification4Line } from "react-icons/ri";
 import { FaRegUser } from "react-icons/fa";
-import { logout } from "../redux/userSlice";
-import { useNavigate } from 'react-router-dom'
+import { logout, updateUser } from "../redux/userSlice";
+import { useNavigate } from 'react-router-dom';
+import { Modal, Box, Button, TextField } from "@mui/material";
+import { MdOutlineSettings } from "react-icons/md";
+
 export default function Dropdown() {
   const [open, setOpen] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
   const {user} = useSelector(state => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const img = `http://localhost:5000${user?.avatar}`;
-  console.log(user);
+  const handleOpen = () => setOpenModal(true);
+  const handleClose = () => setOpenModal(false);
+  const [formData, setFormData] = useState({
+    email: user?.email || '',
+    username: user?.username || '',
+    avatar: user?.avtart || ''
+  });
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  }
+
+  const handleChangeFile = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.files[0]
+    });
+  }
+
+  const handleSubmit = () => {
+    dispatch(updateUser({user: formData, id : user?._id} ));
+  }
+
+
   
   return (
     <div className="relative inline-block">
       {/* Dropdown Button */}
       <div
-        className="flex items-center justify-between bg-gray-200 w-24 h-12 rounded-full border border-gray-300 p-1 cursor-pointer"
+        className="flex items-center justify-between  w-24 h-12   p-1 cursor-pointer"
         onClick={() => setOpen(!open)}
       >
         {/* Circular Button */}
@@ -33,32 +62,22 @@ export default function Dropdown() {
 
         {/* Arrow Icon */}
         <div className={`ml-auto pr-2 transition-transform ${open ? "rotate-180" : "rotate-0"}`}>
-          <svg className="w-4 h-4 text-gray-800" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-          </svg>
         </div>
       </div>
 
       {/* Dropdown Menu */}
       {open && (
-        <div className="absolute p-4 right-1  mb-4 w-100 mr-30 bg-white shadow-md rounded-md overflow-hidden border border-gray-300">
-          <div className="p-2 flex border-gray-200 border-b-2 items-center justify-between w-44">
-            <img
-              src={img}
-              alt="Profile"
-              className="rounded-full"
-              width={40}
-              height={40}
-            />
+        <div className="absolute p-2 right-10  mb-4 w-50  bg-white shadow-md rounded-md overflow-hidden border border-gray-300">
+          <div className="p-2 flex border-gray-200 border-b-1 w-full">
               <span className="font-bold">{user?.username}</span>
           </div>  
-          <div className="flex items-center p-2">
+          <div className="flex items-center p-2 cursor-pointer"  onClick={handleOpen}>
               <FaRegUser />
               <div className="ml-4 w-40 pl-3">Profil</div>
           </div>
-          <div className="flex items-center p-2">
-              <RiNotification4Line  />
-              <div className="ml-4 w-40 pl-3">Notifications</div>
+          <div className="flex items-center p-2 border-gray-200 border-b-1">
+              <MdOutlineSettings />
+              <div className="ml-4 w-40 pl-3">Settings</div>
           </div>
           <div className="flex items-center p-2 cursor-pointer"
             onClick={() => {
@@ -71,7 +90,81 @@ export default function Dropdown() {
               <div className="ml-4 w-40 pl-3"
               >Déconnexion</div>
           </div>  
-   
+          <Modal open={openModal} onClose={handleClose} aria-labelledby="modal-title">
+                    <Box
+            sx={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              width: 400,
+              bgcolor: "background.paper",
+              boxShadow: 24,
+              p: 4,
+              borderRadius: 2,
+            }}
+          >
+
+            <label htmlFor="email">Email: *</label>
+            <TextField
+              id="email"
+              type="email"
+              name="email"
+              variant="outlined"
+              style={{ marginBottom: "4px", width: "90%" }}
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
+
+
+            <label htmlFor="username">Username: *</label>
+            <TextField
+              id="username"
+              type="text"
+              name="username"
+              variant="outlined"
+              style={{ marginBottom: "4px", width: "90%" }}
+              value={formData.username}
+              onChange={handleChange}
+              required
+            />
+
+
+            <input type="file" onChange={handleChangeFile} />
+
+            <Button
+              onClick={handleSubmit}
+              sx={{
+                mt: 2,
+                backgroundColor: "#f97316", // Orange
+                "&:hover": {
+                  backgroundColor: "#ea580c", // Darker orange
+                },
+              }}
+              variant="contained"
+            >
+              Confirm
+            </Button>
+
+            {/* Close Button */}
+            <Button
+              onClick={handleClose}
+              sx={{
+                mt: 2,
+                backgroundColor: "#f0f0f0", // Light grey instead of white
+                color: "black", // Ensure text is visible
+                "&:hover": {
+                  backgroundColor: "#d4d4d4", // Slightly darker grey
+                },
+              }}
+              variant="contained"
+            >
+              Close
+            </Button>
+          </Box>
+
+      </Modal>
         </div>
       )}
     </div>

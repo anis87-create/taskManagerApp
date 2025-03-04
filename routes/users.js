@@ -11,7 +11,7 @@ router.post('/login', errosUserValidation, userCtrl.login);
 router.get('/me',isAuth, userCtrl.currentUser);
 router.get('/',isAuth,checkAccessRoles(["admin"]), userCtrl.findAll);
 router.delete('/:id', isAuth, userCtrl.delete);
-router.put('/:id',errosUserValidation, userCtrl.update);
+router.put('/:id', userCtrl.update);
 
 
 module.exports = router;
