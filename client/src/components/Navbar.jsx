@@ -5,6 +5,7 @@ import Dropdown from './Dropdown';
 import { authMe } from '../redux/userSlice';
 import { RiNotification4Line } from "react-icons/ri";
 import { TiWeatherSunny } from "react-icons/ti";
+import { FaRegMoon } from "react-icons/fa";
 const Navbar = () => {
   const { user } = useSelector(state => state.user); 
 
@@ -15,11 +16,11 @@ const Navbar = () => {
           </div>
           <div className="col-span-9 p-4">
             <div className="flex  items-center">
-                <h2 className="font-bold">👋 Bienvenu(e), {user?.username}</h2>
+                <h2 className="font-bold">👋 Welcome, {user?.username}</h2>
             </div>
           </div>
       <div className="col-span-2 p-1 pl-20 flex items-center space-between">
-         <TiWeatherSunny/>
+         <FaRegMoon/>
         <div className='flex items-center' style={{marginLeft:'25px'}}>
         <RiNotification4Line  size={18}  />
         <Dropdown />
