@@ -41,9 +41,12 @@ exports.createTask = async (req, res) => {
 exports.getAllTasks = async (req, res) => {
     try {
         const tasks = await Task.find();
+        if (!tasks.length) {
+            return res.status(404).json({ message: 'No tasks found' });
+        }
         res.status(200).json(tasks);
     } catch (error) {
-        res.status(400).json({error});
+        console.log(error)        res.status(400).json({ error: error.message });
     }
 }
 

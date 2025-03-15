@@ -1,17 +1,20 @@
-const {Schema, default: mongoose, Mongoose} = require('mongoose');
+const mongoose = require('mongoose');
+
+const {Schema} = mongoose;
+
 
 const TaskSchema = Schema({
     title: {type: String, required: true},
     description: {type: String},
     priority: {
         type: String,
-        enum: ['low','medium', 'high'],
-        default: 'low'
+        enum: ['Low','Medium', 'High'],
+        default: 'Low'
     },
     status: {
         type: String,
-        enum: ['to-do','in-progress','done','canceled'],
-        default: 'to-do'
+        enum: ['To Do','In Progress','Completed'],
+        default: 'To Do'
     }, 
     dueDate: {type: Date},
     tags: [
