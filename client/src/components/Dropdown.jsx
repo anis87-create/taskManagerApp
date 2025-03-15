@@ -58,15 +58,13 @@ export default function Dropdown() {
   };
 
   const handleLanguageChange = (e) => {
-
-    
     setSelectedLanguage(e.target.value);
   };
 
 
   
   return (
-    <div className="relative inline-block">
+    <div className="relative inline-block" style={{marginLeft:'2px'}}> 
       {/* Dropdown Button */}
       <div
         className="flex items-center justify-between  w-24 h-12   p-1 cursor-pointer"

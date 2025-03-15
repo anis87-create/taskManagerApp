@@ -1,10 +1,8 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React from 'react';
+import { useSelector } from 'react-redux';
 import logo from '../assets/logo.png';
 import Dropdown from './Dropdown';
-import { authMe } from '../redux/userSlice';
 import { RiNotification4Line } from "react-icons/ri";
-import { TiWeatherSunny } from "react-icons/ti";
 import { FaRegMoon } from "react-icons/fa";
 const Navbar = () => {
   const { user } = useSelector(state => state.user); 
@@ -22,8 +20,8 @@ const Navbar = () => {
       <div className="col-span-2 p-1 pl-20 flex items-center space-between">
          <FaRegMoon/>
         <div className='flex items-center' style={{marginLeft:'25px'}}>
-        <RiNotification4Line  size={18}  />
-        <Dropdown />
+          <RiNotification4Line  size={18}  />
+          <Dropdown />
         </div>
       </div>
     </div>

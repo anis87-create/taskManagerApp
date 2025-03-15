@@ -3,17 +3,20 @@ import { persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage'; // LocalStorage or AsyncStorage (for React Native)
 import { persistStore } from 'redux-persist';
 import userReducer from './userSlice'; // Your slice
+import taskReducer from './taskSlice';
 
 const persistConfig = {
   key: 'root',
   storage,
 };
 
-const persistedReducer = persistReducer(persistConfig, userReducer);
+const persistedUserReducer = persistReducer(persistConfig, userReducer);
+
 
 const store = configureStore({
   reducer: {
-    user: persistedReducer,  // Wrapping your userReducer with persistReducer
+    user: persistedUserReducer,  // Wrapping your userReducer with persistReducer
+    task: taskReducer // Wrapping your taskReducer with persistReducer
   },
 });
 
