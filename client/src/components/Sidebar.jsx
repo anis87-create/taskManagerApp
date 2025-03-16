@@ -3,7 +3,8 @@ import { MdDashboard, MdTask, MdCalendarToday } from "react-icons/md";
 
 const Sidebar = () => {
   return (
-    <aside className="col-span-2 h-screen  p-4">
+
+    <aside className="col-span-2 h-screen  p-4  border-r border-gray-100">
           <nav className="flex flex-col space-y-2">
     
             <NavLink 
@@ -42,6 +43,7 @@ const Sidebar = () => {
             </NavLink>
           </nav>
         </aside>
+     
   );
 };
 

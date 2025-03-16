@@ -12,7 +12,7 @@ const Layout = () => {
         {/* Sidebar (Full Height) */}
         <Sidebar />
         {/* Main Content */}
-        <main className="flex-grow p-4 bg-gray-50">
+        <main className="flex-grow p-4">
           <Outlet />
         </main>
       </div>

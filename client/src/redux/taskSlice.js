@@ -52,7 +52,7 @@ const taskSlice =  createSlice({
           state.error = payload;
        })
        .addCase(getTasks.pending, (state, {payload}) => {
-          state.loading = false;
+          state.loading = true;
           state.error = false;
        })
        .addCase(getTasks.fulfilled, (state, {payload}) => {

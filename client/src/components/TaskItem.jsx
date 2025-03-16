@@ -1,22 +1,30 @@
-import { Divider } from '@mui/material';
+import { Divider, Skeleton } from '@mui/material';
 import moment from 'moment/moment';
 import React, { useState } from 'react';
 import { BsThreeDots } from 'react-icons/bs';
 import { CiCalendarDate } from 'react-icons/ci';
 import { RiDeleteBinLine } from "react-icons/ri";
+import { useSelector } from 'react-redux';
 
 const TaskItem = ({task}) => {
-    const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const {loading}  = useSelector(state => state.task);
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
   };
+  const {user} = useSelector(state => state.user);
+  const img = `http://localhost:5000${user?.avatar}`;
+
   return (
-            <div className='p-4 border border-gray-200 w-full rounded-lg' style={{marginBottom:'8px'}}>
+      loading ?
+      <Skeleton variant="rectangular" width={210} height={118} />
+       :
+        <div className='p-4 border border-red-500 w-full rounded-lg text-card-foreground shadow-sm cursor-move transition-shadow hover:shadow-md' style={{marginBottom:'8px'}}>
                 <div className="relative w-full mb-2">
                 {/* Title and Icon */}
-                <div className="flex justify-between items-center">
-                    <h2 className="text-2xl font-semibold tracking-tight">{task.title}</h2>
+                <div className="flex items-start justify-between mb-5">
+                    <h3 className="font-semibold tracking-tight text-base first-letter:uppercase">{task.title}</h3>
                     <button onClick={toggleDropdown} className="p-1">
                     <BsThreeDots className="text-gray-600 cursor-pointer" />
                     </button>
@@ -42,7 +50,7 @@ const TaskItem = ({task}) => {
                     </div>
                 )}
                 </div>
-                <p className="my-2  text-sm text-muted-foreground">{task.description}</p>
+                <p className="text-muted-foreground line-clamp-2 text-xs">{task.description}</p>
                 <div className='flex flex-wrap gap-2'>
                 {task.tags.map(tag => <div className={`block my-4 px-3 font-bold rounded-xl text-xs
                     ${tag === "in Progress" ? "bg-blue-100 text-blue-800" : 
@@ -53,10 +61,19 @@ const TaskItem = ({task}) => {
                     tag ==='Low' ?"bg-green-100 text-green-800" : 
                     "border border-gray-200"}`}>{tag}</div>)}
                 </div>  
-                <div className='flex items-center py-2'>
-                    <CiCalendarDate />
-                    <span className='block ml-2'>Due: {moment(task.dueDate).format('DD/MM/YYYY')}</span>
-                </div> 
+                <div className='flex justify-between'>
+                    <div className='flex items-center'>
+                        <CiCalendarDate />
+                        <span className='block ml-2'>{moment(task.dueDate).format('DD/MM/YYYY')}</span>
+                    </div> 
+                    <span className='relative flex shrink-0 overflow-hidden rounded-full h-6 w-6'>
+                    <img
+                        src={img}
+                        alt="Profile"
+                        className="aspect-square h-full w-full"
+                    />
+                    </span>
+                </div>
             </div>
   )
 }
