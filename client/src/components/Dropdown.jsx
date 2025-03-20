@@ -71,13 +71,13 @@ export default function Dropdown() {
         onClick={() => setOpen(!open)}
       >
         {/* Circular Button */}
+        <span className="relative flex shrink-0 overflow-hidden rounded-full h-8 w-8">
           <img
             src={img}
             alt="Profile"
-            className="rounded-full"
-            width={40}
-            height={40}
+            className="aspect-square h-full w-full"
           />
+        </span>  
         {/* Arrow Icon */}
         <div className={`ml-auto pr-2 transition-transform ${open ? "rotate-180" : "rotate-0"}`}>
         </div>

@@ -7,7 +7,7 @@ import { BsTags, BsExclamationCircle } from "react-icons/bs";
 
 import TaskList from './TaskList';
 import { useDispatch, useSelector } from 'react-redux';
-import { addNewTask, getTasks } from '../redux/taskSlice';
+import { addNewTask, getTasks, tasksAdded } from '../redux/taskSlice';
 import _ from 'lodash';
 import {  ShieldCloseIcon } from 'lucide-react';
 
@@ -18,13 +18,13 @@ const Tasks = () => {
   const [newOpenTaskModal, setNewOpenTaskModal] = useState(false);
   const dispatch = useDispatch();
   const { user } = useSelector(state => state.user);
-  const { tasks } = useSelector(state => state.task);
+  const { tasks, loading } = useSelector(state => state.task);
   const [formData, setFormData] = useState({
     title:'',
     description:'',
     status:'To Do',
     priority:'Medium',
-    dueDate:'',
+    dueDate: new Date(),
     owner: user._id,
     tags: []
 });
@@ -39,6 +39,7 @@ const Tasks = () => {
       [e.target.name]: e.target.value
     });
   }
+  const tagsOptions = ['Design', 'Marketing', 'Bug', 'Frontend', 'Backend', 'Documentation', 'Security', 'Performance', 'Feature', 'UI/UX'];
 
 
   const handleAddTask =() => {
@@ -48,8 +49,10 @@ const Tasks = () => {
     setNewOpenTaskModal(false);
   }
   const onSubmit = () => {
-    formData.tags = [formData.status, formData.priority];
+    formData.tags = [formData.status, formData.priority, ...formData.tags];
     dispatch(addNewTask(formData));
+    dispatch(tasksAdded(formData));
+    setNewOpenTaskModal(false);
 }
   const taskStatuses = [
     { label: "All Tasks", count: 24, icon: <BsTags/> },
@@ -65,7 +68,7 @@ const Tasks = () => {
       <div className="flex justify-between items-center mb-4 ">
         <h2 className="text-2xl font-bold">Tasks</h2>
         <button 
-          className="pl-4 pr-4 pt-3 pb-3 text-white font-bold bg-orange-500 flex items-center justify-between rounded-md h-10 hover:opacity-80 transition-opacity"
+          className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-orange-500 text-white hover:bg-orange-500/90 h-10 px-4 py-2"
           onClick={handleAddTask}
         >
           <span>+</span> <span>Add Task</span>
@@ -258,9 +261,26 @@ const Tasks = () => {
                 }}
               />
             </Box>
+            {/* tags */}
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+             <InputLabel sx={{ minWidth: 100, fontWeight: 'bold', fontSize: '15px' }}>Tags:</InputLabel>
+              <FormControl fullWidth size="small">
+                <Select
+                  name="tags"
+                  multiple
+                  value={formData.tags || []}
+                  onChange={handleChangeForm}
+                  renderValue={(selected) => selected.join(', ')}
+                >
+                  {tagsOptions.map((tag) => (
+                    <MenuItem key={tag} value={tag}>{tag}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+             </Box>
 
     
-          </Box>
+             </Box>
                   {/* Action Buttons */}
                   <Box>
               <Button variant="contained" onClick={onSubmit} sx={{ background: "rgb(249, 115, 22)", marginLeft:'349px',

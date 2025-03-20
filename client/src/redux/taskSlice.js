@@ -22,6 +22,7 @@ export const getTasks = createAsyncThunk('task/getTasks', async(_, {rejectWithVa
         const config = {
             headers: { Authorization: `Bearer ${token}` },
           };
+       await new Promise((resolve) => setTimeout(resolve, 2000)); // 5-second delay   
        const res =  await axios.get(API_GET_TASKS, config);
        return res.data;
     } catch (error) {
@@ -37,6 +38,11 @@ const taskSlice =  createSlice({
        tasks:[],
        loading: false,
        error: null
+    },
+    reducers:{
+      tasksAdded: (state, action) => {
+         state.tasks.push(action.payload);
+      }
     },
     extraReducers: (builder) =>{
        builder.addCase(addNewTask.pending, (state, { payload }) => {
@@ -63,11 +69,9 @@ const taskSlice =  createSlice({
         .addCase(getTasks.rejected, (state, {payload}) => {
           state.loading = false;
           state.error = payload;
-          console.log(payload);
-          
         })
        ;
     }
 });
-
+export const {tasksAdded} = taskSlice.actions;
 export default taskSlice.reducer;

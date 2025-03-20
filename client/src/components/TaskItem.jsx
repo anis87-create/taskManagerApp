@@ -6,9 +6,9 @@ import { CiCalendarDate } from 'react-icons/ci';
 import { RiDeleteBinLine } from "react-icons/ri";
 import { useSelector } from 'react-redux';
 
-const TaskItem = ({task}) => {
+const TaskItem = ({task, loading}) => {
   const [isOpen, setIsOpen] = useState(false);
-  const {loading}  = useSelector(state => state.task);
+  
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
@@ -16,11 +16,12 @@ const TaskItem = ({task}) => {
   const {user} = useSelector(state => state.user);
   const img = `http://localhost:5000${user?.avatar}`;
 
+  
+  if(loading){
+    return <Skeleton variant='rectangle'/>
+  }
   return (
-      loading ?
-      <Skeleton variant="rectangular" width={210} height={118} />
-       :
-        <div className='p-4 border border-red-500 w-full rounded-lg text-card-foreground shadow-sm cursor-move transition-shadow hover:shadow-md' style={{marginBottom:'8px'}}>
+        <div className={`p-4 border ${task.status === 'Completed' ? 'border-gray-200': 'border-red-500'} w-full rounded-lg text-card-foreground shadow-sm cursor-pointer transition-shadow hover:shadow-md`} style={{marginBottom:'8px'}}>
                 <div className="relative w-full mb-2">
                 {/* Title and Icon */}
                 <div className="flex items-start justify-between mb-5">
@@ -53,7 +54,7 @@ const TaskItem = ({task}) => {
                 <p className="text-muted-foreground line-clamp-2 text-xs">{task.description}</p>
                 <div className='flex flex-wrap gap-2'>
                 {task.tags.map(tag => <div className={`block my-4 px-3 font-bold rounded-xl text-xs
-                    ${tag === "in Progress" ? "bg-blue-100 text-blue-800" : 
+                    ${tag === "In Progress" ? "bg-blue-100 text-blue-800" : 
                     tag === "High" ? "bg-red-100 text-red-800" :
                     tag === "To Do" ? "bg-slate-100 text-slate-800":
                     tag ==='Medium' ? "bg-yellow-100 text-yellow-800" :
@@ -74,7 +75,7 @@ const TaskItem = ({task}) => {
                     />
                     </span>
                 </div>
-            </div>
+        </div>
   )
 }
 
