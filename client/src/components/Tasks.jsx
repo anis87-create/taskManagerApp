@@ -1,4 +1,4 @@
-import { Button, FormControl, IconButton, InputLabel, MenuItem, Modal, Select, TextField, Typography, Box} from '@mui/material';
+import {  FormControl , MenuItem, Select} from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import {  FaSearch, FaSpinner } from 'react-icons/fa';
 import { IoMdCheckmarkCircleOutline } from "react-icons/io";
@@ -9,7 +9,8 @@ import TaskList from './TaskList';
 import { useDispatch, useSelector } from 'react-redux';
 import { addNewTask, getTasks, tasksAdded } from '../redux/taskSlice';
 import _ from 'lodash';
-import {  ShieldCloseIcon } from 'lucide-react';
+import { toast } from 'react-toastify';
+import TaskModal from './TaskModal';
 
 const Tasks = () => {
   const [searchValue, setSearchValue] = useState('');
@@ -18,7 +19,8 @@ const Tasks = () => {
   const [newOpenTaskModal, setNewOpenTaskModal] = useState(false);
   const dispatch = useDispatch();
   const { user } = useSelector(state => state.user);
-  const { tasks, loading } = useSelector(state => state.task);
+  const { tasks, errors, loading } = useSelector(state => state.task);
+
   const [formData, setFormData] = useState({
     title:'',
     description:'',
@@ -27,10 +29,15 @@ const Tasks = () => {
     dueDate: new Date(),
     owner: user._id,
     tags: []
-});
+   });
+   const [formErrors, setFormErrors] = useState(errors);
+
   useEffect(() => {
-    dispatch(getTasks());
-  }, [dispatch]);
+    setFormErrors(errors);
+    if(errors.length === 0){
+      dispatch(getTasks());
+    }
+  }, [dispatch, errors]);
 
   const filteredTasks = (arr) => _.filter(arr, task => task.owner === user._id);
   const handleChangeForm = (e) => {
@@ -39,7 +46,7 @@ const Tasks = () => {
       [e.target.name]: e.target.value
     });
   }
-  const tagsOptions = ['Design', 'Marketing', 'Bug', 'Frontend', 'Backend', 'Documentation', 'Security', 'Performance', 'Feature', 'UI/UX'];
+
 
 
   const handleAddTask =() => {
@@ -47,13 +54,38 @@ const Tasks = () => {
   }
   const handleClose = () => {
     setNewOpenTaskModal(false);
+    setFormData({
+      title:'',
+      description:'',
+      status:'To Do',
+      priority:'Medium',
+      dueDate: new Date(),
+      owner: user._id,
+      tags: []
+    });
+    setFormErrors([]);
   }
-  const onSubmit = () => {
-    formData.tags = [formData.status, formData.priority, ...formData.tags];
-    dispatch(addNewTask(formData));
-    dispatch(tasksAdded(formData));
-    setNewOpenTaskModal(false);
-}
+  const onSubmit = async () => {
+    try {
+      // Attendre la fin de l'action
+      await dispatch(addNewTask(formData)).unwrap();
+      dispatch(tasksAdded(formData));
+      setNewOpenTaskModal(false);
+      toast.success('Task Added');
+      setFormData({
+        title:'',
+        description:'',
+        status:'To Do',
+        priority:'Medium',
+        dueDate: new Date(),
+        owner: user._id,
+        tags: []
+      })
+    } catch (error) {
+      toast.error(error || "An error occurred while adding the task.");
+    }
+    }
+ 
   const taskStatuses = [
     { label: "All Tasks", count: 24, icon: <BsTags/> },
     { label: "To Do", count: 8, icon: <GoClock /> },
@@ -135,163 +167,14 @@ const Tasks = () => {
         {/* Colonne droite (Liste des tâches) */}
         <div className="w-9/12">
           <TaskList tasks={filteredTasks(tasks)} />
-          {newOpenTaskModal &&  <Modal open={newOpenTaskModal} onClose={handleClose}
-     >
-        <Box
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: 550,
-            bgcolor: "white",
-            p: 4,
-            borderRadius: 2,
-            boxShadow: 24,
-          }}
-        >
-           <IconButton
-                onClick={handleClose}
-                sx={{
-                  position: 'absolute',
-                  top: 8,
-                  right: 8,
-                  color: 'text.secondary', // Set color of the close button
-                }}
-              >
-                <ShieldCloseIcon />
-              </IconButton>
-          <Typography variant="h6" sx={{
-            fontWeight:'bold',
-            fontSize:'18px'
-          }} gutterBottom>
-            Add New Task
-          </Typography>
-          {/* Paragraph Description */}
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            Please fill in the details below to create a new task. Ensure that all necessary information is provided.
-          </Typography>
-          
-          <Box sx={{
-            padding:'8px',
-            marginLeft:'20px',
-          }}>
-            {/* Title */}
-            <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-              <InputLabel  sx={{ minWidth: 100, fontWeight:'bold', fontSize:'15px' }}>Title:</InputLabel>
-              <TextField
-                name="title"
-                value={formData.title}
-                onChange={handleChangeForm}
-                fullWidth
-                size="small"
-                className="border:none focus:border-orange-500"
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    '&.Mui-focused fieldset': {
-                      borderColor: 'orange', // Sets the border color to orange when focused
-                    },
-                  },
-                }}
-              />
-            </Box>
-
-            {/* Description */}
-            <Box sx={{ display: "flex", mb: 2 }}>
-              <InputLabel sx={{ minWidth: 100, fontWeight:'bold', fontSize:'15px' }}>Description:</InputLabel>
-              <TextField
-                name="description"
-                value={formData.description}
-                onChange={handleChangeForm}
-                fullWidth
-                multiline
-                className='focus:border-orange-500'
-                rows='4'
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    '&.Mui-focused fieldset': {
-                      borderColor: 'orange', // Sets the border color to orange when focused
-                    },
-                  },
-                }}
-              />
-            </Box>
-
-            {/* Status */}
-            <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-              <InputLabel sx={{ minWidth: 100, fontWeight:'bold', fontSize:'15px' }}>Status:</InputLabel>
-              <FormControl fullWidth size="small">
-                <Select name="status"  value={formData.status} onChange={handleChangeForm}>
-                  <MenuItem value="To Do">To Do</MenuItem>
-                  <MenuItem value="In Progress">In Progress</MenuItem>
-                  <MenuItem value="Completed">Completed</MenuItem>
-                </Select>
-              </FormControl>
-            </Box>
-
-            {/* Priority */}
-            <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-              <InputLabel sx={{ minWidth: 100, fontWeight:'bold', fontSize:'15px' }}>Priority:</InputLabel>
-              <FormControl fullWidth size="small">
-                <Select name="priority"  value={formData.priority} onChange={handleChangeForm}>
-                  <MenuItem value="Low">Low</MenuItem>
-                  <MenuItem value="Medium">Medium</MenuItem>
-                  <MenuItem value="High">High</MenuItem>
-                </Select>
-              </FormControl>
-            </Box>
-
-            {/* Due Date */}
-            <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-              <InputLabel sx={{ minWidth: 100, fontWeight:'bold', fontSize:'15px' }}>Due Date:</InputLabel>
-              <TextField
-                type="date"
-                name="dueDate"
-                value={formData.dueDate}
-                onChange={handleChangeForm}
-                fullWidth
-                size="small"
-                className='focus:border-orange-500'
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    '&.Mui-focused fieldset': {
-                      borderColor: 'orange', // Sets the border color to orange when focused
-                    },
-                  },
-                }}
-              />
-            </Box>
-            {/* tags */}
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-             <InputLabel sx={{ minWidth: 100, fontWeight: 'bold', fontSize: '15px' }}>Tags:</InputLabel>
-              <FormControl fullWidth size="small">
-                <Select
-                  name="tags"
-                  multiple
-                  value={formData.tags || []}
-                  onChange={handleChangeForm}
-                  renderValue={(selected) => selected.join(', ')}
-                >
-                  {tagsOptions.map((tag) => (
-                    <MenuItem key={tag} value={tag}>{tag}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-             </Box>
-
-    
-             </Box>
-                  {/* Action Buttons */}
-                  <Box>
-              <Button variant="contained" onClick={onSubmit} sx={{ background: "rgb(249, 115, 22)", marginLeft:'349px',
-              '&:hover': {
-                  opacity: 0.9, // This will increase the opacity (or decrease it) on hover
-                  transition: 'opacity 0.3s ease', 
-                },
-              }}>Create Task</Button>
-            </Box>
-        </Box>
-      </Modal>}
+          <TaskModal
+            open={newOpenTaskModal}
+            onClose={handleClose}
+            formData={formData}
+            formErrors={formErrors}
+            handleChangeForm={handleChangeForm}
+            onSubmit={onSubmit}
+            buttonTitle='Create Task'/>
         </div>
 
 

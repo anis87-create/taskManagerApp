@@ -10,13 +10,12 @@ export const addNewTask = createAsyncThunk('task/addTask', async (newTask, { rej
             headers: { Authorization: `Bearer ${token}` },
           };
          await axios.post(API_ADD_TASK, newTask, config);
-    } catch (error) {
-        return rejectWithValue(error.response?.data?.message || "Erreur API");
+    } catch (error) {      
+        return rejectWithValue(error.response?.data?.errors || "Erreur API");
     }
 });
 
-export const getTasks = createAsyncThunk('task/getTasks', async(_, {rejectWithValue}) => {
-   
+export const getTasks = createAsyncThunk('task/getTasks', async(_, {rejectWithValue}) => { 
     try {
         const token = localStorage.getItem("token");
         const config = {
@@ -26,9 +25,35 @@ export const getTasks = createAsyncThunk('task/getTasks', async(_, {rejectWithVa
        const res =  await axios.get(API_GET_TASKS, config);
        return res.data;
     } catch (error) {
-        console.log(error.response?.data?.message);
-        return rejectWithValue(error.response?.data?.message || "Erreur API");
+        return rejectWithValue(error.response?.data?.errors || "Erreur API");
     }
+});
+
+export const findOneTask = createAsyncThunk('task/findTask', async(id, {rejectWithValue}) => {
+   try {
+      const API_GET_TASK = `http://localhost:5000/api/tasks/${id}`;
+      const token = localStorage.getItem('token');
+      const config = {
+         headers: { Authorization: `Bearer ${token}` },
+       };
+      const res = await axios.get(API_GET_TASK, config);
+      return res.data;
+   } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Erreur API");
+   }
+});
+
+export const updateTask = createAsyncThunk('task/updateTask', async(id,task, {rejectWithValue}) => {
+   try {
+      const API_UPDATE_TASK = `http://localhost:5000/api/tasks/${id}`;
+      const token = localStorage.getItem('token');
+      const config = {
+         headers: { Authorization: `Bearer ${token}` },
+       };
+      await axios.put(API_UPDATE_TASK,task, config);
+   } catch (error) {      
+      return rejectWithValue(error.response?.data?.errors || "Erreur API");
+   }
 });
 
 
@@ -37,7 +62,8 @@ const taskSlice =  createSlice({
     initialState: {
        tasks:[],
        loading: false,
-       error: null
+       errors: [],
+       task: null
     },
     reducers:{
       tasksAdded: (state, action) => {
@@ -47,29 +73,50 @@ const taskSlice =  createSlice({
     extraReducers: (builder) =>{
        builder.addCase(addNewTask.pending, (state, { payload }) => {
           state.loading = true;
-          state.error = false;
+          state.errors = [];
        })
        .addCase(addNewTask.fulfilled,(state, { payload }) => {
           state.loading = false;
-          state.error = false;
+          state.errors = [];
        })
        .addCase(addNewTask.rejected,(state, { payload }) => {
           state.loading = false;
-          state.error = payload;
+          state.errors = Array.isArray(payload) ? payload : [payload];  
        })
        .addCase(getTasks.pending, (state, {payload}) => {
+          state.tasks = [];
           state.loading = true;
-          state.error = false;
        })
        .addCase(getTasks.fulfilled, (state, {payload}) => {
           state.loading = false;
           state.tasks = payload;
-          state.error = false;
         })
         .addCase(getTasks.rejected, (state, {payload}) => {
           state.loading = false;
-          state.error = payload;
         })
+        .addCase(findOneTask.pending, (state, {payload}) => {
+          state.errors = []; 
+        })
+        .addCase(findOneTask.fulfilled, (state, {payload}) => {
+          state.task = payload
+          state.errors = []; 
+        })
+        .addCase(findOneTask.rejected,(state, {payload}) => {
+          state.task =null;
+          state.errors = Array.isArray(payload) ? payload : [payload]; 
+        })
+        .addCase(updateTask.pending, (state,{payload}) => {
+          state.loading = false;
+          state.errors = [];
+        })
+        .addCase(updateTask.fulfilled, (state,{payload}) => {
+         state.loading = true;
+         state.errors = [];
+       })
+       .addCase(updateTask.rejected, (state,{payload}) => {
+         state.loading = false;
+         state.errors = Array.isArray(payload) ? payload : [payload]; 
+       })
        ;
     }
 });
