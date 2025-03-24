@@ -6,11 +6,14 @@ import { CiCalendarDate } from 'react-icons/ci';
 import { RiDeleteBinLine } from "react-icons/ri";
 import {  useDispatch, useSelector } from 'react-redux';
 import TaskModal from './TaskModal';
-import { getTasks, updateTask } from '../redux/taskSlice';
+import {  deleteTask, updateTask } from '../redux/taskSlice';
+import { toast } from 'react-toastify';
+import DraggableDialog from './ConfirmDialog';
 
 const TaskItem = ({task, loading}) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isEditableOpen, setIsEditableOpen] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
    const {errors } = useSelector(state => state.task);
 
    const dispatch = useDispatch();
@@ -24,8 +27,8 @@ const TaskItem = ({task, loading}) => {
     owner: user._id,
     tags: task?.tags
    });
-
-  const toggleDropdown = () => {
+  
+  const toggleDropdown = (e) => {
     setIsOpen(!isOpen);
   };
   const img = `http://localhost:5000${user?.avatar}`;
@@ -44,7 +47,52 @@ const TaskItem = ({task, loading}) => {
     });
   }
   const onUpdateTask = () => {
-     dispatch(updateTask(task._id, formData));
+     dispatch(updateTask({id: task._id, task: formData}));
+     toast.success(`Task "${formData.title}" has been updated`);
+  }
+
+  
+  const onUpdateStatus = (status) => {
+    const updateTags = formData.tags.map(
+      (item, index) => index === 0 ? status: item
+    );
+
+    dispatch(updateTask({
+      id: task._id,
+      task: {
+        ...formData,
+        status,
+        tags: updateTags
+      }
+    }))
+  }
+
+  const onUpdatePriority = (priority) => {
+    const updateTags = formData.tags.map(
+      (item, index) => index === 1 ? priority: item
+    );
+
+    dispatch(updateTask({
+      id: task._id,
+      task: {
+        ...formData,
+        priority,
+        tags: updateTags
+      }
+    }))
+  }
+
+  const handleDialogOpen = () => {
+    setOpenDialog(true);
+    setIsOpen(false);
+  };
+
+  const handleDialogClose = () => {
+    setOpenDialog(false);
+  };
+  const onDeleteTask = () => {
+    dispatch(deleteTask({id: task._id}));
+    toast.success(`Task ${formData.title} has been deleted`);
   }
   
   
@@ -58,7 +106,7 @@ const TaskItem = ({task, loading}) => {
                 <div className="flex items-start justify-between mb-5">
                     <h3 className="font-semibold tracking-tight text-base first-letter:uppercase">{task.title}</h3>
                     <button onClick={toggleDropdown} className="p-1">
-                    <BsThreeDots className="text-gray-600 cursor-pointer" />
+                    <BsThreeDots className="text-gray-600 hover:bg-gray-300 hover:text-accent-foreground rounded-md p-0" />
                     </button>
                 </div>
 
@@ -71,16 +119,16 @@ const TaskItem = ({task, loading}) => {
                           </li>
                         <Divider sx={{ bgcolor: "gray.200"}}/>
                         <h3 className='font-bold ml-4 my-3'>Status</h3>
-                        <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Set to To Do</li>
-                        <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Set to In Progress</li>
-                        <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Mark as completed</li>
+                        <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={() => onUpdateStatus('To Do')}>Set to To Do</li>
+                        <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={() => onUpdateStatus('In Progress')}>Set to In Progress</li>
+                        <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={() => onUpdateStatus('Completed')}>Mark as Completed</li>
                         <Divider sx={{ bgcolor: "gray.200" }}/>
                         <h3 className='font-bold ml-4 my-3'>Priority</h3>
-                        <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Set To Low Priority</li>
-                        <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Set To Medium Priority</li>
-                        <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Set To High Priority</li>
+                        <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={() => onUpdatePriority('Low')}>Set To Low Priority</li>
+                        <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={() => onUpdatePriority('Medium')}>Set To Medium Priority</li>
+                        <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={() => onUpdatePriority('High')}>Set To High Priority</li>
                         <Divider sx={{ bgcolor: "gray.200" }}/>
-                        <li className='px-4 py-2 flex  items-center cursor-pointer'>
+                        <li className='px-4 py-2 flex  items-center cursor-pointer' onClick={handleDialogOpen}>
                             <RiDeleteBinLine style={{marginRight:'8px', color:'red'}}/>
                             <span className='text-red-500'>Delete</span>
                         </li>
@@ -123,7 +171,13 @@ const TaskItem = ({task, loading}) => {
                   handleChangeForm={handleChangeForm}
                   onSubmit={onUpdateTask}
                   buttonTitle='Save Changes'
-          />
+              />
+              <DraggableDialog
+                open={openDialog}
+                onDeleteTask={onDeleteTask}
+                handleDialogClose={handleDialogClose}
+                loading={loading}
+              />
         </div>
   )
 }

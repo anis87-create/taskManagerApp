@@ -1,6 +1,7 @@
 import React from 'react';
 import { Modal, Box, Typography, TextField, InputLabel, IconButton, FormControl, Select, MenuItem, Button } from '@mui/material';
 import { ShieldCloseIcon } from 'lucide-react';
+import moment from 'moment';
 
 const TaskModal = ({open, onClose, formData, formErrors, handleChangeForm, onSubmit, buttonTitle }) => {
   const tagsOptions = ['Design', 'Marketing', 'Bug', 'Frontend', 'Backend', 'Documentation', 'Security', 'Performance', 'Feature', 'UI/UX'];   
@@ -104,7 +105,7 @@ const TaskModal = ({open, onClose, formData, formErrors, handleChangeForm, onSub
               <TextField
                 type="date"
                 name="dueDate"
-                value={formData.dueDate}
+                value={moment(formData.dueDate).format('YYYY-MM-DD')}
                 onChange={handleChangeForm}
                 fullWidth
                 size="small"
