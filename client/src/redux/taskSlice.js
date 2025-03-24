@@ -76,7 +76,7 @@ const taskSlice =  createSlice({
        tasks:[],
        loading: false,
        errors: [],
-       task: null
+       task: false
     },
     reducers:{
       tasksAdded: (state, action) => {
@@ -123,7 +123,7 @@ const taskSlice =  createSlice({
           state.errors = [];
         })
         .addCase(updateTask.fulfilled, (state,{payload}) => {
-         state.loading = true;
+         state.loading = false;
          state.errors = [];
        })
        .addCase(updateTask.rejected, (state,{payload}) => {         
@@ -131,11 +131,11 @@ const taskSlice =  createSlice({
          state.errors = Array.isArray(payload) ? payload : [payload]; 
        })
        .addCase(deleteTask.pending, (state,{payload}) => {         
-         state.loading = false;
+         state.loading = true;
          state.errors = [];
        })
        .addCase(deleteTask.fulfilled, (state,{payload}) => {
-        state.loading = true;
+        state.loading = false;
         state.errors = [];
       })
       .addCase(deleteTask.rejected, (state,{payload}) => {         

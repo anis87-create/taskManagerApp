@@ -10,7 +10,8 @@ import {  deleteTask, updateTask } from '../redux/taskSlice';
 import { toast } from 'react-toastify';
 import DraggableDialog from './ConfirmDialog';
 
-const TaskItem = ({task, loading}) => {
+const TaskItem = ({task}) => {
+  const { loading } = useSelector(state => state.task);  
   const [isOpen, setIsOpen] = useState(false);
   const [isEditableOpen, setIsEditableOpen] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
@@ -95,10 +96,6 @@ const TaskItem = ({task, loading}) => {
     toast.success(`Task ${formData.title} has been deleted`);
   }
   
-  
-  if(loading){
-    return <Skeleton variant='rectangle'/>
-  }
   return (
         <div className={`p-4 border ${task.status === 'Completed' ? 'border-gray-200': 'border-red-500'} w-full rounded-lg text-card-foreground shadow-sm cursor-pointer transition-shadow hover:shadow-md`} style={{marginBottom:'8px'}}>
                 <div className="relative w-full mb-2">
@@ -176,7 +173,6 @@ const TaskItem = ({task, loading}) => {
                 open={openDialog}
                 onDeleteTask={onDeleteTask}
                 handleDialogClose={handleDialogClose}
-                loading={loading}
               />
         </div>
   )

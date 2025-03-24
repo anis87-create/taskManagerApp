@@ -1,4 +1,4 @@
-import {  FormControl , MenuItem, Select} from '@mui/material';
+import {  FormControl , MenuItem, Select, Skeleton} from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import {  FaSearch, FaSpinner } from 'react-icons/fa';
 import { IoMdCheckmarkCircleOutline } from "react-icons/io";
@@ -19,7 +19,7 @@ const Tasks = () => {
   const [newOpenTaskModal, setNewOpenTaskModal] = useState(false);
   const dispatch = useDispatch();
   const { user } = useSelector(state => state.user);
-  const { tasks, errors, loading } = useSelector(state => state.task);
+  const { tasks, errors, loading } = useSelector(state => state.task); 
 
   const [formData, setFormData] = useState({
     title:'',
@@ -125,7 +125,11 @@ const Tasks = () => {
 
           {/* Liste des statuts */}
           <div className="mt-4 bg-white shadow-md rounded-lg p-3">
-            {taskStatuses.map((status, index) => (
+            {loading ? [...Array(6)].map((_, index) => (
+          <div key={index} className="mb-4">
+            <Skeleton variant="rectangular" width="100%" height={20} />
+          </div>
+        )) :  taskStatuses.map((status, index) => (
               <div
                 key={index}
                 className={`flex justify-between items-center py-2 px-3  rounded-md cursor-pointer transition-colors ${
@@ -147,7 +151,12 @@ const Tasks = () => {
           </div>
 
           {/* Sélecteur de tri */}
-          <div className="p-4 border  shadow-md rounded-lg">
+          {
+            loading ? [...Array(1)].map((_, index) => (
+              <div key={index} className="mb-4">
+                <Skeleton variant="rectangular" width="100%" height={70} />
+              </div>
+            )): <div className="p-4 border  shadow-md rounded-lg">
             <label className="block font-semibold mb-1 rounded-lg">Sort By</label>
             <FormControl fullWidth>
               <Select
@@ -162,11 +171,14 @@ const Tasks = () => {
               </Select>
             </FormControl>
           </div>
+          }
+          
         </div>
 
         {/* Colonne droite (Liste des tâches) */}
         <div className="w-9/12">
-          <TaskList tasks={filteredTasks(tasks)} />
+          <TaskList tasks={filteredTasks(tasks)}
+          />
           <TaskModal
             open={newOpenTaskModal}
             onClose={handleClose}

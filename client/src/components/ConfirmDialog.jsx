@@ -1,7 +1,8 @@
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
+import { useSelector } from "react-redux";
 
-export default function DraggableDialog({open,onDeleteTask,  handleDialogClose, loading}) {
-   
+export default function DraggableDialog({open,onDeleteTask,  handleDialogClose}) {
+  const { loading } = useSelector(state => state.task); 
   
     return (
       <>
