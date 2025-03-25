@@ -9,9 +9,9 @@ import TaskModal from './TaskModal';
 import {  deleteTask, updateTask } from '../redux/taskSlice';
 import { toast } from 'react-toastify';
 import DraggableDialog from './ConfirmDialog';
+import TaskDetailsModal from './TaskModalDetails';
 
-const TaskItem = ({task}) => {
-  const { loading } = useSelector(state => state.task);  
+const TaskItem = ({task}) => { 
   const [isOpen, setIsOpen] = useState(false);
   const [isEditableOpen, setIsEditableOpen] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
@@ -28,6 +28,7 @@ const TaskItem = ({task}) => {
     owner: user._id,
     tags: task?.tags
    });
+   const [openTaskModalDetails, setOpenTaskModalDetails] = useState();
   
   const toggleDropdown = (e) => {
     setIsOpen(!isOpen);
@@ -49,7 +50,9 @@ const TaskItem = ({task}) => {
   }
   const onUpdateTask = () => {
      dispatch(updateTask({id: task._id, task: formData}));
-     toast.success(`Task "${formData.title}" has been updated`);
+     setTimeout(() => {
+      toast.success(`Task "${formData.title}" has been updated`);
+     }, 2000)
   }
 
   
@@ -93,11 +96,25 @@ const TaskItem = ({task}) => {
   };
   const onDeleteTask = () => {
     dispatch(deleteTask({id: task._id}));
-    toast.success(`Task ${formData.title} has been deleted`);
+    setTimeout(() => {
+      toast.success(`Task "${formData.title}" has been deleted`);
+    }, 2000)
+    
+  }
+
+  const onOpenTaskModalDetails = () => {
+    setOpenTaskModalDetails(true);
+  }
+
+  const oncloseTaskModalDetails = () => {
+    setOpenTaskModalDetails(false);
   }
   
   return (
-        <div className={`p-4 border ${task.status === 'Completed' ? 'border-gray-200': 'border-red-500'} w-full rounded-lg text-card-foreground shadow-sm cursor-pointer transition-shadow hover:shadow-md`} style={{marginBottom:'8px'}}>
+        <div className={`p-4 border ${task.status === 'Completed' ? 'border-gray-200': 'border-red-500'} w-full rounded-lg text-card-foreground shadow-sm cursor-pointer transition-shadow hover:shadow-md`} 
+        style={{marginBottom:'8px'}}
+        onClick={onOpenTaskModalDetails}
+        >
                 <div className="relative w-full mb-2">
                 {/* Title and Icon */}
                 <div className="flex items-start justify-between mb-5">
@@ -173,6 +190,11 @@ const TaskItem = ({task}) => {
                 open={openDialog}
                 onDeleteTask={onDeleteTask}
                 handleDialogClose={handleDialogClose}
+              />
+              <TaskDetailsModal
+                open={openTaskModalDetails}
+                close={oncloseTaskModalDetails}
+                task={formData}
               />
         </div>
   )

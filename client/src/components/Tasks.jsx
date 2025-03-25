@@ -68,10 +68,14 @@ const Tasks = () => {
   const onSubmit = async () => {
     try {
       // Attendre la fin de l'action
-      await dispatch(addNewTask(formData)).unwrap();
+      formData.tags.unshift(formData.status, formData.priority);
+      dispatch(addNewTask(formData)).unwrap();      
       dispatch(tasksAdded(formData));
       setNewOpenTaskModal(false);
-      toast.success('Task Added');
+      setTimeout(() => {
+        toast.success('Task Added');
+      }, 2000)
+      
       setFormData({
         title:'',
         description:'',

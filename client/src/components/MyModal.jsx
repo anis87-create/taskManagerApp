@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Modal, Box, Button, Typography, Input, TextField } from "@mui/material";
 
-const MyModal = ({handleOpen,handleClose, open}) => {
+const MyModal = ({handleClose, open}) => {
 
 
 

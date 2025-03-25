@@ -1,7 +1,7 @@
 import React from 'react';
 import { Modal, Box, Typography, TextField, InputLabel, IconButton, FormControl, Select, MenuItem, Button } from '@mui/material';
 import { ShieldCloseIcon } from 'lucide-react';
-import moment from 'moment';
+import moment from 'moment/moment';
 
 const TaskModal = ({open, onClose, formData, formErrors, handleChangeForm, onSubmit, buttonTitle }) => {
   const tagsOptions = ['Design', 'Marketing', 'Bug', 'Frontend', 'Backend', 'Documentation', 'Security', 'Performance', 'Feature', 'UI/UX'];   
@@ -49,9 +49,17 @@ const TaskModal = ({open, onClose, formData, formErrors, handleChangeForm, onSub
             <TextField
               name="title"
               value={formData.title}
+              className='focus:border-orange-500'
               onChange={handleChangeForm}
               error={formErrors.some(error => error?.params === 'title')}
               helperText={formErrors.find(error => error?.params === 'title')?.msg}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  '&.Mui-focused fieldset': {
+                    borderColor: 'orange', // Sets the border color to orange when focused
+                  },
+                },
+              }}
             />
           </Box>
              {/* Description */}
@@ -63,7 +71,6 @@ const TaskModal = ({open, onClose, formData, formErrors, handleChangeForm, onSub
                 onChange={handleChangeForm}
                 fullWidth
                 multiline
-                className='focus:border-orange-500'
                 rows='4'
                 sx={{
                   '& .MuiOutlinedInput-root': {
